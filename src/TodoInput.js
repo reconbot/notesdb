@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 import { TextField, InputAdornment, IconButton } from '@material-ui/core'
 import { AddCircleOutline } from '@material-ui/icons'
 
-export const TodoInput = ({ value, updateValue, onSubmit }) => {
+export const TodoInput = ({ value, updateValue, onSubmit, className }) => {
   const [multiline, setMultiline] = useState(false)
   const submit = () => {
     setMultiline(false)
@@ -42,8 +42,8 @@ export const TodoInput = ({ value, updateValue, onSubmit }) => {
   }
 
   return (
-    <>
-      <TextField
+    <TextField
+      className={className}
       id="outlined-multiline-flexible"
       label="What's on your mind?"
       InputProps={inputProps}
@@ -55,6 +55,5 @@ export const TodoInput = ({ value, updateValue, onSubmit }) => {
       variant="outlined"
       onKeyPress={onEnter}
     />
-    </>
   )
 }
