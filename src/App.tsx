@@ -1,9 +1,9 @@
 import React, { useMemo, useState } from 'react'
-import { makeStyles } from '@material-ui/core/styles';
+import { makeStyles } from '@material-ui/core/styles'
 import { TodoInput } from './TodoInput'
 import { DeleteForever } from '@material-ui/icons'
-import { Paper, Table, TableHead, TableRow, TableCell, TableBody } from '@material-ui/core';
-import { useTodoStore } from './useTodoStore';
+import { Paper, Table, TableHead, TableRow, TableCell, TableBody } from '@material-ui/core'
+import { useTodoStore } from './useTodoStore'
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -21,7 +21,7 @@ const useStyles = makeStyles(theme => ({
 
 function App() {
   console.log('render App')
-  const [todos, { create }] = useTodoStore('todos', { rejectErrors: false })
+  const [todos, { create }] = useTodoStore()
   const [inputText, updateInput] = useState('')
 
   const todosArray = useMemo(() => {
@@ -30,7 +30,7 @@ function App() {
         ...todo,
         createdAtDisplay: new Date(todo.createdAt).toLocaleDateString()
       }
-    }).reverse()
+    })
   }, [todos])
   const todosByDate = useMemo(() => [...todosArray].sort(i => i.createdAt), [todosArray])
   const filteredTodos = useMemo(() => todosByDate.filter(todo => todo.text.match(inputText)), [inputText, todosByDate])
