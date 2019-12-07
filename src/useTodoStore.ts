@@ -1,4 +1,4 @@
-import { usePouch } from "./usePouch"
+import { usePouch, Doc } from "./usePouch"
 
 export interface TodoInput {
   text: string
@@ -16,6 +16,8 @@ export interface UpdateTodo extends TodoInput {
   _id: string
 }
 
+export type TodoDoc= Doc<Todo>
+
 const makeObject = (input: TodoInput): Omit<Todo, "_id"> => {
   if (!input.text) {
     throw new Error('Invalid Todo')
@@ -29,18 +31,14 @@ const makeObject = (input: TodoInput): Omit<Todo, "_id"> => {
 }
 
 export const useTodoStore = () => {
-  const [todos, pouch] = usePouch<Todo>('todos')
+  const [todos, { put, post, remove }] = usePouch<Todo>('todos')
 
-  const create = (input: TodoInput) => {
-    return pouch.post(makeObject(input))
-  }
-  const update = (input: UpdateTodo) => {
-    return pouch.put(makeObject(input))
-  }
+  const create = (input: TodoInput) => post(makeObject(input))
+  const update = (input: UpdateTodo) => put(makeObject(input))
 
-  return [todos, {
+  return [{ todos }, {
     create,
-    remove: pouch.remove,
+    remove,
     update
   }] as const
 }

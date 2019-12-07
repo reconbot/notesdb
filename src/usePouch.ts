@@ -1,8 +1,10 @@
 import { useState, useEffect, useRef, useCallback } from 'react'
 import PouchDB from 'pouchdb'
 
+export type Doc<T> =  PouchDB.Core.ExistingDocument<T>
+
 export interface Docs<T> {
-  [key: string]: PouchDB.Core.ExistingDocument<T>
+  [key: string]: Doc<T>
 }
 
 // connect to the db, load all docs

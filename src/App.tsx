@@ -3,7 +3,7 @@ import { makeStyles } from '@material-ui/core/styles'
 import { TodoInput } from './TodoInput'
 import { DeleteForever } from '@material-ui/icons'
 import { Paper, Table, TableHead, TableRow, TableCell, TableBody } from '@material-ui/core'
-import { useTodoStore } from './useTodoStore'
+import { useTodoStore, TodoDoc } from './useTodoStore'
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -19,21 +19,20 @@ const useStyles = makeStyles(theme => ({
   }
 }))
 
+const viewModel = (todo: TodoDoc) => ({
+  ...todo,
+  createdAtDisplay: new Date(todo.createdAt).toLocaleDateString()
+})
+
 function App() {
   console.log('render App')
   const [todos, { create }] = useTodoStore()
   const [inputText, updateInput] = useState('')
+  const [seelctedTodo, setSelectedTodo] = useState<null|string>(null)
 
-  const todosArray = useMemo(() => {
-    return Object.values(todos).map(todo => {
-      return {
-        ...todo,
-        createdAtDisplay: new Date(todo.createdAt).toLocaleDateString()
-      }
-    })
-  }, [todos])
-  const todosByDate = useMemo(() => [...todosArray].sort(i => i.createdAt), [todosArray])
-  const filteredTodos = useMemo(() => todosByDate.filter(todo => todo.text.match(inputText)), [inputText, todosByDate])
+  const todosArray = useMemo(() => Object.values(todos).map(viewModel), [todos])
+  const todosByDate = useMemo(() => [...todosArray].sort(({createdAt}) => createdAt), [todosArray])
+  const filteredTodos = useMemo(() => todosByDate.filter(({text}) => text.match(inputText)), [inputText, todosByDate])
 
   const todosToRender = filteredTodos
 
@@ -41,7 +40,9 @@ function App() {
     if (inputText.replace(/\n/g, '') === '') {
       return
     }
-    create({ text: inputText })
+    create({ text: inputText }).then(doc => {
+      setSelectedTodo(doc.id)
+    })
     updateInput('')
   }
 
@@ -57,12 +58,12 @@ function App() {
           </TableRow>
         </TableHead>
         <TableBody>
-          {todosToRender.map(todo => (
-            <TableRow key={todo._id}>
+          {todosToRender.map(({ _id, text, createdAtDisplay }) => (
+            <TableRow key={_id}>
               <TableCell component="th" scope="row" align="center">
-                {todo.text}
+                {text}
               </TableCell>
-              <TableCell align="right">{todo.createdAtDisplay}</TableCell>
+              <TableCell align="right">{createdAtDisplay}</TableCell>
             </TableRow>
           ))}
         </TableBody>
