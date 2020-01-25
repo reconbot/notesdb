@@ -3,15 +3,16 @@
   "version": "0.1.0",
   "private": true,
   "devDependencies": {
-    "@material-ui/core": "^4.5.1",
+    "@material-ui/core": "^4.9.0",
     "@material-ui/icons": "^4.5.1",
+    "@types/jest": "^24.9.1",
     "@types/pouchdb": "^6.4.0",
-    "@types/react-dom": "^16.9.1",
+    "@types/react-dom": "^16.9.5",
     "pouchdb": "^7.1.1",
-    "react": "^16.10.2",
-    "react-dom": "^16.10.2",
-    "react-scripts": "3.0.1",
-    "typescript": "^3.6.4"
+    "react": "^16.12.0",
+    "react-dom": "^16.12.0",
+    "react-scripts": "3.3.0",
+    "typescript": "^3.7.5"
   },
   "scripts": {
     "start": "react-scripts start",
@@ -20,7 +21,13 @@
     "eject": "react-scripts eject"
   },
   "eslintConfig": {
-    "extends": "react-app"
+    "extends": "react-app",
+    "rules": {
+      "semi": [
+        "error",
+        "never"
+      ]
+    }
   },
   "browserslist": {
     "production": [
