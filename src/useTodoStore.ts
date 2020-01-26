@@ -1,9 +1,5 @@
 import { usePouch, Doc } from "./usePouch"
-
-export interface TodoInput {
-  text: string
-  createdAt?: number
-}
+import { useCallback } from "react"
 
 export interface Todo {
   text: string
@@ -12,20 +8,29 @@ export interface Todo {
   updatedAt: number
 }
 
-export interface UpdateTodo extends TodoInput {
+export interface CreateTodo {
+  text: string
+}
+
+export interface UpdateTodo extends Todo {
   _id: string
 }
 
 export type TodoDoc= Doc<Todo>
 
-const makeObject = (input: TodoInput): Omit<Todo, "_id"> => {
-  if (!input.text) {
-    throw new Error('Invalid Todo')
-  }
+const createTodo = (input: CreateTodo): Todo => {
   return {
     ...input,
     header: input.text.split('\n')[0],
-    createdAt: input.createdAt || Date.now(),
+    createdAt: Date.now(),
+    updatedAt: Date.now(),
+  }
+}
+
+const updateObject = (input: UpdateTodo): UpdateTodo => {
+  return {
+    ...input,
+    header: input.text.split('\n')[0],
     updatedAt: Date.now(),
   }
 }
@@ -33,10 +38,10 @@ const makeObject = (input: TodoInput): Omit<Todo, "_id"> => {
 export const useTodoStore = () => {
   const [todos, { put, post, remove }] = usePouch<Todo>('todos')
 
-  const create = (input: TodoInput) => post(makeObject(input))
-  const update = (input: UpdateTodo) => put(makeObject(input))
+  const create = useCallback((input: CreateTodo) => post(createTodo(input)), [post])
+  const update = useCallback((input: UpdateTodo) => put(updateObject(input)), [put])
 
-  return [{ todos }, {
+  return [todos, {
     create,
     remove,
     update

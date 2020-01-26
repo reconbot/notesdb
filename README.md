@@ -1,3 +1,8 @@
+# NotesDB
+
+## Todo
+- [ ] Type to search on title, no matches enter makes new, arrows (first selected)
+
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
 ## Available Scripts

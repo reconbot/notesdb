@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef, useCallback } from 'react'
 import PouchDB from 'pouchdb'
 
-export type Doc<T> =  PouchDB.Core.ExistingDocument<T>
+export type Doc<T> = PouchDB.Core.ExistingDocument<T>
 
 export interface Docs<T> {
   [key: string]: Doc<T>
@@ -9,12 +9,12 @@ export interface Docs<T> {
 
 // connect to the db, load all docs
 export const usePouch = <T>(dbName: string) => {
-  let db: PouchDB.Database<T> | null = null
+  const dbRef = useRef<PouchDB.Database<T> | null>(null)
   const [docs, setDocs] = useState<Docs<T>>({})
   useEffect(() => {
-    console.log('useEffect open db')
+    console.log('usePouch open db')
     let canceled = false
-    db = new PouchDB<T>(dbName)
+    const db = dbRef.current = new PouchDB<T>(dbName)
 
     const changes = db.changes({
       since: 'now',
@@ -22,19 +22,16 @@ export const usePouch = <T>(dbName: string) => {
       include_docs: true,
       conflicts: true,
     }).on('change', change => {
-      console.log({change, canceled })
+      console.log('usePouch', { change, canceled })
       if (canceled) {
         return
       }
-      if (change.deleted) {
-        setDocs(data => {
+      setDocs(data => {
+        if (change.deleted) {
           const newDocs = {...data}
           delete newDocs[change.id]
           return newDocs
-        })
-        return
-      }
-      setDocs(data => {
+        }
         if (!change.doc) {
           return data
         }
@@ -42,8 +39,7 @@ export const usePouch = <T>(dbName: string) => {
       })
     })
 
-    db.allDocs({include_docs: true}).then(({ rows }) => {
-      console.log('updating docs', {rows})
+    db.allDocs({ include_docs: true }).then(({ rows }) => {
       if (canceled) { return }
       const newDocs: Docs<T> = {}
       for (const row of rows) {
@@ -56,15 +52,16 @@ export const usePouch = <T>(dbName: string) => {
 
     return () => {
       changes.cancel()
-      console.log('closing db')
+      console.log('usePouch closing db')
       if (db) {
         db.close()
       }
-      db = null
+      dbRef.current = null
     }
   }, [dbName])
 
   const remove = useCallback(async (doc: PouchDB.Core.RemoveDocument) => {
+    const db = dbRef.current
     if (!db) {
       throw new Error('removing before db loaded, not your fault, usePouch has a race condition?')
     }
@@ -72,6 +69,7 @@ export const usePouch = <T>(dbName: string) => {
   }, [])
 
   const put = useCallback(async <I extends T & { _id: string }>(doc: I) => {
+    const db = dbRef.current
     if (!db) {
       throw new Error('putting before db loaded, not your fault, usePouch has a race condition?')
     }
@@ -79,6 +77,7 @@ export const usePouch = <T>(dbName: string) => {
   }, [])
 
   const post = useCallback(async (doc: T) => {
+    const db = dbRef.current
     if (!db) {
       throw new Error('posting before db loaded, not your fault, usePouch has a race condition?')
     }
