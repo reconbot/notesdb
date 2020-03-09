@@ -71,3 +71,41 @@ This section has moved here: https://facebook.github.io/create-react-app/docs/de
 ### `npm run build` fails to minify
 
 This section has moved here: https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify
+
+## Data
+
+### People
+  name
+  title
+  needsOneOnOne
+  actions[]
+  notes[]
+
+### Notes
+  title
+  text
+  createdAt
+  updatedAt
+  type (note, 1:1, info)
+  people[]
+  actions[]
+
+### Actions
+  person
+  note
+  type: (todo, opportunity)
+  text
+  completedAt
+  createdAt
+  updatedAt
+
+## Views
+
+### 1:1 view
+  person, lastOneOnOne, days since last 1:1, oldestOpenTodo, oldestOpenOpportunity
+
+### Notes
+  title, createdAt
+
+### Todos
+  text, createdAt, person
