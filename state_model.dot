@@ -1,0 +1,38 @@
+digraph G {
+  graph [fontsize=10 fontname="Verdana" compound=true];
+	State [shape=doublecircle];
+	DB [shape=doublecircle];
+  node [style=filled,color=white];
+
+	subgraph cluster_0 {
+		style=filled;
+		color=lightgrey;
+		Update -> "Pending\nUpdate";
+    "Pending\nUpdate" -> "Update\nComplete" [style=dotted];
+    "Pending\nUpdate" -> "Update\nConflict" [style=dotted];
+		label = "Mutations";
+	}
+  "Pending\nUpdate" -> State [label="Optimistic Update" ]
+  "Update\nComplete" -> State [label="Actual Update" ]
+  "Pending\nUpdate" -> DB [label="Pending Update"]
+  DB -> "Update\nComplete"  [style=dotted]
+  "Update\nConflict" -> State;
+  DB -> "Update\nConflict"  [style=dotted]
+
+  subgraph cluster_1 {
+		style=filled;
+		color=lightgrey;
+		Delete -> "Pending\nDelete";
+    "Pending\nDelete" -> "Delete\nComplete" [style=dotted];
+    "Pending\nDelete" -> "Delete\nConflict" [style=dotted];
+		label = "Delete";
+	}
+  "Pending\nDelete" -> State [label="Optimistic Delete" ]
+  "Delete\nComplete" -> State [label="Actual Delete" ]
+  "Pending\nDelete" -> DB [label="Pending Delete"]
+  DB -> "Delete\nComplete"  [style=dotted]
+  DB -> "Delete\nConflict"  [style=dotted]
+  "Delete\nConflict" -> State;
+
+  DB -> State [label="Change Feed"];
+}

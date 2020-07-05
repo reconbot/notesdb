@@ -9,14 +9,34 @@ export const Person = {
   updatedAt: 'number',
 }
 
+export interface IPerson {
+  name: string
+  title: string
+  needsOneOnOne: Boolean
+  actions: string[]
+  notes: string[]
+  createdAt: number
+  updatedAt: number
+}
+
 export const Note = {
   title: 'string',
   text: 'string',
-  type: 'string', // note, 1:1, bio
+  type: /note|1:1|bio/,
   people: ['string'],
   actions: ['string'],
   createdAt: 'number',
   updatedAt: 'number',
+}
+
+export interface INote {
+  title: string
+  text: string
+  type: 'note'|'1:1'|'bio'
+  people: string[]
+  actions: string[]
+  createdAt: number
+  updatedAt: number
 }
 
 export const Action = {
